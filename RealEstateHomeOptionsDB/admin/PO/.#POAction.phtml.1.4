@@ -1,0 +1,174 @@
+<<<<<<< POAction.phtml
+<?php
+/*
+ * Created on 19-Feb-2006
+ *
+ * Actions for handling standard and non-standard POs
+ */
+ define ("SUB_FOLDER_INVERT_RELATIVE_PATH", "../.."); 
+ 
+ include_once "../main_include.phtml";
+ 
+ /**
+  * Check and updte relation between UserSave table 
+  * and StandardPO table. This function should be 
+  * called everytime the user commit the save 
+  */
+ function handlePOIntegrity($userID){
+ 	addStandardPO($userID);
+ 	deleteStandardPO($userID);
+ }
+ 
+ /**
+  * Add new standard PO from data stored
+  * at UserSave table
+  * NOTE: PO is not generated if the cost is 0
+  */
+ function addStandardPO($userID){
+ 	$numOfContractor = getNumOfContractor();
+
+ 	$sql = "";
+ 	for ($i =0 ; $i < $numOfContractor ; $i++){
+ 		$sql = "INSERT INTO StandardPO 
+			(UserID, ItemID, OptionID, ChoiceID, ContractorID, Cost, CreateDate)
+			SELECT UserID, ItemID, OptionID, ChoiceID, 'contractor$i', Contractor$i, NOW()
+			FROM UserSave WHERE 
+			(UserID, ItemID, ChoiceID, OptionID, 'contractor$i') NOT IN 
+			( Select UserID, ItemID, ChoiceID, OptionID, ContractorID " .
+				" from StandardPO" .
+				" where UserID=$userID) " .
+			" AND UserSave.contractor$i != 0" .
+			" AND UserID=$userID";
+	
+		$result = executeSql($sql);
+ 	}			
+ }
+ 
+ /**
+  * Delete all outdated standard PO for 
+  * a specific user
+  */
+ function deleteStandardPO($userID){
+	$numOfContractor = getNumOfContractor();
+
+ 	$sql = "";
+ 	for ($i =0 ; $i < $numOfContractor ; $i++){
+ 		$sql = "DELETE FROM StandardPO " .
+ 				" WHERE " .
+ 				" UserID=$userID " .
+ 				" AND ContractorID=\"contractor$i\"" . 
+ 				" AND (UserID, ItemID, OptionID, ChoiceID, ContractorID) NOT IN " .
+ 				" (SELECT UserID, ItemID, OptionID, ChoiceID, 'contractor$i'" .
+ 					" FROM UserSave" .
+ 					" WHERE UserID=$userID" .
+ 					" AND Contractor$i != 0)"; 	
+
+		$result = executeSql($sql);
+ 	}			
+ }
+ 
+ /**
+  * Update all PO for already committed User
+  */
+ function updateAllCommittedUser(){
+ 	print "in updateAllCommittedUser<BR>";
+ 	$sql = "SELECT UserID FROM User WHERE Commit = 1";
+ 	
+	$result = executeSql($sql);
+	print "num rows=" . mysql_num_rows($result);
+	while ($row = mysql_fetch_array($result)){
+		print "running user id=" . $row['UserID'] . "<BR>"; 
+		handlePOIntegrity($row['UserID']);
+	}
+ }
+?>
+=======
+<?php
+/*
+ * Created on 19-Feb-2006
+ *
+ * Actions for handling standard and non-standard POs
+ */
+ define ("SUB_FOLDER_INVERT_RELATIVE_PATH", "../.."); 
+ 
+ include_once "../main_include.phtml";
+ 
+ /**
+  * Check and updte relation between UserSave table 
+  * and StandardPO table. This function should be 
+  * called everytime the user commit the save 
+  */
+ function handlePOIntegrity($userID){
+ 	addStandardPO($userID);
+ 	deleteStandardPO($userID);
+ }
+ 
+ /**
+  * Add new standard PO from data stored
+  * at UserSave table
+  * NOTE: PO is not generated if the cost is 0
+  */
+ function addStandardPO($userID){
+ 	$numOfContractor = getNumOfContractor();
+
+ 	$sql = "";
+ 	for ($i =0 ; $i < $numOfContractor ; $i++){
+ 		$sql = "INSERT INTO StandardPO 
+			(UserID, ItemID, OptionID, ChoiceID, ContractorID, Cost, CreateDate)
+			SELECT UserID, ItemID, OptionID, ChoiceID, 'contractor$i', Contractor$i, NOW()
+			FROM UserSave WHERE 
+			(UserID, ItemID, ChoiceID, OptionID, 'contractor$i') NOT IN 
+			( Select UserID, ItemID, ChoiceID, OptionID, ContractorID " .
+				" from StandardPO" .
+				" where UserID=$userID) " .
+			" AND UserSave.contractor$i != 0" .
+			" AND UserID=$userID";
+	
+		$result = executeSql($sql);
+ 	}			
+ }
+ 
+ /**
+  * Delete all outdated standard PO for 
+  * a specific user
+  */
+ function deleteStandardPO($userID){
+	$numOfContractor = getNumOfContractor();
+
+ 	$sql = "";
+ 	for ($i =0 ; $i < $numOfContractor ; $i++){
+ 		$sql = "DELETE FROM StandardPO " .
+ 				" WHERE " .
+ 				" UserID=$userID " .
+ 				" AND ContractorID=\"contractor$i\"" . 
+ 				" AND (UserID, ItemID, OptionID, ChoiceID, ContractorID) NOT IN " .
+ 				" (SELECT UserID, ItemID, OptionID, ChoiceID, 'contractor$i'" .
+ 					" FROM UserSave" .
+ 					" WHERE UserID=$userID" .
+ 					" AND Contractor$i != 0)"; 	
+
+		$result = executeSql($sql);
+ 	}			
+ }
+ 
+ /**
+  * Update all PO for already committed User
+  */
+ function updateAllCommittedUser(){
+ 	global $db;
+ 	
+ 	print "in updateAllCommittedUser<BR>";
+ 	$sql = "SELECT UserID FROM User WHERE Commit = 1";
+ 	
+	$result = executeSql($sql);
+	$result = mysql_query($sql,$db) or 
+					 die("Insert/update failed:\n" . mysql_error() . "\nFull SQL:<BR>" . $sql . $PHP_SELF);
+	
+	print "num rows=" . mysql_num_rows($result);
+	while ($row = mysql_fetch_array($result)){
+		print "running user id=" . $row['UserID'] . "<BR>"; 
+		handlePOIntegrity($row['UserID']);
+	}
+ }
+?>
+>>>>>>> 1.4

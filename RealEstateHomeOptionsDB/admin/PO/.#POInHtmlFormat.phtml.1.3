@@ -1,0 +1,186 @@
+<?php
+
+include_once "POListFormat.phtml";
+
+class POListHtmlFormat extends POListFormat {
+/*
+ * Print po in html format
+ */
+/**
+	 * print unit number head row
+	 */
+	function printUnitNumberHeadRow($unitNumber){
+		global $prev_PO_type;
+		global $prev_unit_number;
+		
+		 		
+		if ($unitNumber != $prev_unit_number){
+			$prev_unit_number = $unitNumber;
+			// reset po type every time a new contractor is displayed 
+			$prev_PO_type = "JUNK_DATA";
+			if ($sortOrder[0] == "rooms"){
+				// reset contractor
+				$prev_contractor = "JUNK_DATA";			
+?>		
+		<tr><td><br><br></td></tr>
+<?			}
+	
+?>		
+			<tr>
+				<td colspan=100 class="tail-left-big"><a href="#">Unit Number: <?= $unitNumber ;?></a></td>
+			</tr>
+<?		}
+	}
+
+	/**
+	 * Print trade head row
+	 */
+	function printTradeHeadRow($price_row){
+		global $prev_contractor;
+		global $sortOrder;
+		
+		if ($price_row['ContractorName'] != $prev_contractor){
+			$prev_contractor = $price_row['ContractorName'];
+			// reset po type every time a new contractor is displayed 
+			$prev_PO_type = "JUNK_DATA";
+			if ($sortOrder[0] == "trade"){
+				// reset contractor
+				$prev_unit_number = "JUNK_DATA";			
+?>		
+		<tr><td><br><br></td></tr>
+<? 			}
+?>			<tr>
+				<td colspan=100 class="tail-left-big"><a href="#">Trade : <?= $price_row['ContractorName'] ;?></a></td>
+			</tr>
+<?		}
+	}
+
+	/**
+	 * Pride PO Head row
+	 * $price_row is an associate array contains sql result
+	 */
+	function printPOHeadRow($price_row){
+		global $prev_PO_type;
+		global $mode;
+		global $ShowPrice;
+		
+		if ($price_row['POType'] != $prev_PO_type){
+			$prev_PO_type = $price_row['POType']; 
+			if ($price_row['POType'] == "StandardPO"){
+?>				<tr class="head">
+<?				if ($mode != "display"){ ?>				
+					<td>Issued</td>
+					<td>Issued Date</td>
+					<td>Invoice #</td>
+<?				} ?>					
+					<td>Section</td>
+					<td>Subsection</td>
+					<td>Option</td>
+					<td>Choice</td>
+					<? if ($ShowPrice){ ?>
+					<td>Cost</td>
+					<? } ?>
+				</tr>
+<?
+			} else {
+				if ($mode != "display"){ 				
+?>				<tr class="head">
+					<td>Issued</td>
+					<td>Issued Date</td>
+					<td>Invoice #</td>
+<?				} ?>
+					<td>Section</td>
+					<td>Subsection</td>
+					<td colspan=2>Description</td>
+<? 				if ($ShowPrice){ ?>			
+					<td>Cost</td>
+<? 				} ?>
+<?				if ($mode != "display"){ ?>									
+					<td>Action</td>
+<?				} ?>					
+				</tr>
+<?			}				
+		}	
+	}
+
+
+	/**
+	 * Print PO Data
+	 */
+	function printPODataRow($price_row){
+		global $mode, $ShowPrice;
+		
+		if ($price_row['POType'] == "StandardPO"){
+			if ($mode != "display"){ ?>				
+				<td><? printNonStandardPOIssueCheckBox(array("POID" =>$price_row['POID'], "issued"=>$price_row['Issued'], "disabled"=>1)); ?></td>
+				<td><?= $price_row['IssuedDate'];?></td>
+				<td><?= $price_row['InvoiceID'];?></td>				
+<?			} ?>
+				<td><?= $price_row['SectionName'];?></td>
+				<td><?= $price_row['SubsectionName'];?></td>
+				<td><?= $price_row['OptionName'];?></td>
+				<td><?= $price_row['ChoiceName'];?></td>
+				<? if ($ShowPrice){ ?>
+				<td><?= convertPriceConstantToString($price_row['Cost']); ?></td>
+				<? } ?>
+				
+			</tr>
+<?
+		} else {	
+			if ($mode != "display"){ ?>				
+				<td><? printNonStandardPOIssueCheckBox(array("POID" =>$price_row['POID'], "issued"=>$price_row['Issued'], "disabled"=>1)); ?></td>
+				<td><?= $price_row['IssuedDate'];?></td>
+				<td><?= $price_row['InvoiceID'];?></td>				
+<?			} ?>
+				<td><?= $price_row['SectionName'];?></td>
+				<td><?= $price_row['SubsectionName'];?></td>
+				<td colspan=2><?= $price_row['Description'];?></td>
+<? 				if ($ShowPrice){ ?>		
+				<td><?= $price_row['Cost'];?></td>
+<? 				} ?>
+<?				if ($mode != "display"){ ?>								
+				<td nowrap><? printNonStandardPOEditButton($price_row['POID']); ?><? printNonStandardPODeleteButton($price_row['POID']); ?></td>
+<?				} ?>				
+			</tr>
+<?
+		}
+	}	 
+// get info for option chosen
+		
+	/**
+	 * Print PO in div
+	 * Return data in a string
+	 */		
+	function printPO($POResultRow, $POViewOrder){
+		ob_start();
+		
+		$sortOrder = explode(";", $POViewOrder);
+		$prev_contractor = "JUNK_DATA";
+		$prev_unit_number = "JUNK_DATA";
+		$prev_PO_type = "JUNK_DATA";
+		while ($price_row = mysql_fetch_array($POResultRow)){
+		
+			// print the specific one first depends on the sort order	
+			if ($sortOrder[0] == "trade"){
+				$this->printTradeHeadRow($price_row);
+			} else {
+				$this->printUnitNumberHeadRow($price_row['UnitNumber']);
+			}
+			
+			// print header if needed
+			$this->printUnitNumberHeadRow($price_row['UnitNumber']);
+			$this->printTradeHeadRow($price_row);
+			
+			$this->printPOHeadRow($price_row);
+			
+			displayMouseOverTR();
+			// a standarized way to display PO Issue checkbox			
+			$this->printPODataRow($price_row);
+		}		
+		
+	   $output = ob_get_contents();
+	   ob_end_clean();
+	   return $output;		
+	}
+}			
+?>

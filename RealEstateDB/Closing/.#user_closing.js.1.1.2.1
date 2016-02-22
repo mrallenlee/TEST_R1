@@ -1,0 +1,106 @@
+// Controler for user_closing
+dojo.addOnLoad(page_load);
+// page init function
+function page_load(){
+	// register events
+	dojo.event.connect(dojo.byId("btnUpdate"), "onclick", btnUpdate_Click);
+ 	
+ 	// init form 
+	form_Init();
+}
+
+// init form data
+function form_Init(){
+  //tool.dialog.objectDialog(_REQUEST);
+  if(typeof( _REQUEST)== "undefined" || !_REQUEST["UnitNumber"]) {
+    tool.dialog.errorDialog("This page was opened with an invalid request.");
+    return;
+  }
+   
+  dojo.io.bind({
+    url: "user_closing_act.phtml",
+    content: {act:"select", UnitNumber:_REQUEST["UnitNumber"]},
+    method: "POST",
+    mimetype:  "text/plain",
+    load: form_Init_Callback,
+    error: function(type, error){debugger;tool.dialog.errorDialog(error.message);}
+  });
+
+}
+
+function form_Init_Callback(type, evlObj ) {
+  //alert( "The script returned\n" + evlObj );
+  eval("var userClosingObj = " + evlObj);
+//  tool.dialog.objectDialog(userClosingObj);
+  
+  var myform = document.user_closing_form;
+
+  // binding data to control
+  tool.form.bindData2Control(userClosingObj, myform);
+  document.getElementById("UnitNumber").innerHTML = userClosingObj.UnitNumber;
+  document.getElementById("Purchaser").innerHTML = userClosingObj.FirstName + " " + userClosingObj.LastName;
+  myform.GSTIncluded.value = Math.round(100*userClosingObj["OfferPrice"]*userClosingObj["GSTRate"])/100;
+  myform.NetGSTPayable.value = Math.round(100*(myform.GSTIncluded.value - myform.GSTRebate.value))/100;
+  myform.QualifyGSTRebate.checked = (userClosingObj.QualifyGSTRebate == 1);
+  
+}
+
+
+// update user closing data
+function btnUpdate_Click(){
+  if(! validation()) return false;
+  
+  dojo.io.bind({
+    formNode: document.user_closing_form,
+    content: {act:'update', UnitNumber:_REQUEST["UnitNumber"]},
+    mimetype: "text/plain",
+    load: btnUpdate_Callback,
+    error: function(type, error){tool.dialog.errorDialog(error.message);}
+  });
+}
+
+function btnUpdate_Callback(type, data){
+  alert(data);
+}
+
+function validation() {
+  var errstr = "";
+  var myform = document.user_closing_form;
+  
+  // set default
+//  if (myform.SixFeeProvTax.value.trim()=="") myform.SixFeeProvTax.value="0";
+//  if (myform.SixFeeConnCharge.value.trim()=="") myform.SixFeeConnCharge.value="0";
+//  if (myform.SixFeeHydroCharge.value.trim()=="") myform.SixFeeHydroCharge.value="0";
+//  if (myform.SixFeeWaterMeter.value.trim()=="") myform.SixFeeWaterMeter.value="0";
+//  if (myform.SixFeeDevCharge.value.trim()=="") myform.SixFeeDevCharge.value="0";
+//  if (myform.SixFeeTarion.value.trim()=="") myform.SixFeeTarion.value="0";
+  if (myform.AdmFeeCheqRecovery.value.trim()=="") myform.AdmFeeCheqRecovery.value="0";
+  if (myform.AdmFeeCommExpense.value.trim()=="") myform.AdmFeeCommExpense.value="0";
+  if (myform.AdmFeeStatutory.value.trim()=="") myform.AdmFeeStatutory.value="0";
+  if (myform.AdmFeeLawSociety.value.trim()=="") myform.AdmFeeLawSociety.value="0";
+  if (myform.AdmFeeMsf.value.trim()=="") myform.AdmFeeMsf.value="0";
+  if (myform.AdmFeeMortageCharge.value.trim()=="") myform.AdmFeeMortageCharge.value="0";
+  if (myform.AdmFeeCreditMaint.value.trim()=="") myform.AdmFeeCreditMaint.value="0";
+  if (myform.AdmFeeCreditPurchase.value.trim()=="") myform.AdmFeeCreditPurchase.value="0";
+  if (myform.AdmFeeOutstanding.value.trim()=="") myform.AdmFeeOutstanding.value="0";
+  
+//  if (! tool.validator.isNumeric(myform.SixFeeProvTax.value)) errstr += "Provincial sales tax on chattels must be numberic.\n";
+//  if (! tool.validator.isNumeric(myform.SixFeeConnCharge.value)) errstr += "Water and Sewer Connection Charges must be numberic.\n";
+//  if (! tool.validator.isNumeric(myform.SixFeeWaterMeter.value)) errstr += "Water Meter must be numberic.\n";
+//  if (! tool.validator.isNumeric(myform.SixFeeHydroCharge.value)) errstr += "Hydro meter and installation Charges must be numberic.\n";
+//  if (! tool.validator.isNumeric(myform.SixFeeDevCharge.value)) errstr += "Development Charge must be numberic.\n";
+//  if (! tool.validator.isNumeric(myform.SixFeeTarion.value)) errstr += "Tarion must be numberic.\n";
+  if (! tool.validator.isNumeric(myform.AdmFeeCheqRecovery.value)) errstr += "Cheque Recovery Costs must be numberic.\n";
+  if (! tool.validator.isNumeric(myform.AdmFeeCommExpense.value)) errstr += "Estimated Total Common Expenses must be numberic.\n";
+  if (! tool.validator.isNumeric(myform.AdmFeeStatutory.value)) errstr += "Statutory Interest(From Lawyer) must be numberic.\n";
+  if (! tool.validator.isNumeric(myform.AdmFeeLawSociety.value)) errstr += "Law Society Charges must be numberic.\n";
+  if (! tool.validator.isNumeric(myform.AdmFeeMsf.value)) errstr += "NSF Fees must be numberic.\n";
+  if (! tool.validator.isNumeric(myform.AdmFeeMortageCharge.value)) errstr += "Mortage Discharge Fee must be numberic.\n";
+  if (! tool.validator.isNumeric(myform.AdmFeeCreditMaint.value)) errstr += "Credit One Year Maintenance Fees must be numberic.\n";
+  if (! tool.validator.isNumeric(myform.AdmFeeCreditPurchase.value)) errstr += "Credit Purchase Price on Closing must be numberic.\n";
+  if (! tool.validator.isNumeric(myform.AdmFeeOutstanding.value)) errstr += "Outstanding Options Charges must be numberic.\n";
+//  
+  if(errstr!="") tool.dialog.errorDialog(errstr);
+  return errstr=="" ;
+}
+

@@ -1,0 +1,85 @@
+<?php
+include_once "../main_include.phtml";
+include_once "POListFormat.phtml";
+// due to the path problem, include these 2 files in the class includes thie POInPdfFormat.phtml
+//include_once SUB_FOLDER_INVERT_RELATIVE_PATH."/".HOME_OPTIONS_INVERT_RELATIVE_PATH."/framework/PDF/PDFMaker.phtml";
+//include_once SUB_FOLDER_INVERT_RELATIVE_PATH."/".HOME_OPTIONS_INVERT_RELATIVE_PATH."/framework/PDF/PDFMakerA4Config.phtml";
+include_once "POPdfInvoiceTemplate.phtml";
+
+class POListPdfFormat extends POListFormat {
+	var $debugLevel = 0;
+	
+	/**
+	 * PO List PDF format
+	 */
+	function POListPdfFormat($debugLevel = 0){
+		$this->debugLevel = $debugLevel;
+	}
+	
+	/**
+	 * Print a PO page
+	 * $PODataRow: is the data row from mysql_fetch_array
+	 */
+	function printPOPage($pdfMaker, $PODataRow, $debugLevel = 0){
+		$cost 			= "cost=" . $PODataRow['Cost'];
+		$unitNumber 	= "unitNumber=" . $PODataRow['UnitNumber'];
+		$issuedDate 	= "issuedDate=" . $PODataRow['IssuedDate'];
+		if ($PODataRow['POType'] == "StandardPO"){
+			$description 	= "Section: " . $PODataRow['SubsectionName'] . "\n";
+			$description 	.= "Option: " . $PODataRow['OptionName'] . "\n";
+			$description 	.= "Choice: " . $PODataRow['ChoiceName'];			    	
+		} else {
+			$description	= "description=" . $PODataRow['Description'];
+		}
+		$invoiceID 		= "invoiceID=" . $PODataRow['InvoiceID'];
+		$POType			= "POType=" . $PODataRow['POType'];
+		$debugLevel = "";
+		if ($this->debugLevel > 0){
+			$debugLevel = "debugLevel=$this->debugLevel";	
+		} 		
+		 
+		printPDFInvoice($pdfMaker, $cost, $unitNumber, $issuedDate, $description, $invoiceID, $POType, $debugLevel);
+	}
+			
+	/**
+	 * Initialize pdf page
+	 * Return PDFMaker object
+	 */	
+	function openPDF($fileName = ""){
+		$pdfMaker = new PDFMaker($fileName);
+		return $pdfMaker;
+	}
+	
+	/**
+	 * Close the document
+	 */
+	function closePDF($pdfMaker){
+		$pdfMaker->close();	
+	}
+	
+	/**
+	 * Print PO in div
+	 */		
+	function printPO($POResultRow, $POViewOrder){
+		$pdfMaker = $this->openPDF();
+		while ($PODataRow = mysql_fetch_array($POResultRow)){					
+			$this->printPOPage($PODataRow, $this->debugLevel);
+		}		
+		
+		$this->closePDF($pdfMaker);
+
+		
+		$buf = $pdfMaker->getContent();
+		$len = strlen($buf);
+		
+		// if not in debug mode
+		if ($this->debugLevel  <= 0){
+			header("Content-type: application/pdf");
+			header("Content-Length: $len");
+			header("Content-Disposition: inline; filename=PO.pdf");	
+			print $buf;	
+		}
+	}
+}
+?>			
+

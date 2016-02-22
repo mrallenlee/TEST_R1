@@ -1,0 +1,56 @@
+<?
+/**
+* Calculate Adjusted Sales Price by deducting incentives and GST Rebate. Vavlues are stored 
+* in User.AdjustedSalesPrice and User.GSTRebate0
+*/
+include_once "main_include.phtml";
+
+include "Closing/GSTRebateAction.phtml";
+
+/**
+ * Calculate ASP for the user
+ * userID : userID or string "ALL"
+ */
+function calculateASP($userID){
+	$sql = "SELECT UserID, UnitNumber, OfferPrice, Price, AdjustedSalesPrice,
+			UnitAllowance, AgreementDepositAmount
+			FROM User";
+	
+	if ($userID != "ALL"){
+		$sql .= " WHERE UserID=$userID";
+	}
+echo "sql=$sql<BR>";	
+	$result = executeSql($sql);
+	
+	while ($row = mysql_fetch_array($result)){
+		$realPrice = $row['OfferPrice'];
+		if (!isSet($realPrice) || $realPrice <= 0 ){
+			$realPrice = $row['Price'];
+		}
+		
+		// less incentives
+		$realPrice -= $row['UnitAllowance'];
+		$gstRebate = calGSTRebateValue(array("offerPrice"=>$realPrice, "purchaseDate"=>$row['AgreementDepositAmount']));
+		$adjustedSalesPrice  = $realPrice - $gstRebate;
+	echo "realPrice=$realPrice gstRebate=$gstRebate<BR>";	
+		echo "orig ASP=" . $row['AdjustedSalesPrice'];
+		echo "new ASP=" . $adjustedSalesPrice."<BR>";
+		if ($adjustedSalesPrice != $row['AdjustedSalesPrice']){
+			// update the DB
+			$updateSql = "UPDATE User 
+					SET 
+					AdjustedSalesPrice=$realPrice,
+					GSTRebate=$gstRebate,
+					ASPNetGST=$adjustedSalesPrice
+					WHERE UserID=" . $row['UserID'];
+			echo "sql=$updateSql<BR>";
+			$updateResult = executeSql($updateSql);			
+		}
+	} // while
+}
+
+// if in debug mode
+if ($isDebug == 1){
+	calculateASP('ALL');
+}
+?>

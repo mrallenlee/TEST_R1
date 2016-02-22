@@ -1,0 +1,186 @@
+<?
+include "../config/config.phtml";
+include "../main_include.phtml";
+?>
+
+<html>
+<? 
+print_top_frame($PHP_SELF, "../", true, false); 
+?>
+
+<script type="text/javascript" src="../framework/dojo/dojo.js"></script>
+<?php
+include 'AjaxUtil_class.phtml';
+AjaxUtil::request2JsObj();
+?>
+<script type="text/javascript" src="user_closing.js"></script>
+
+<body>
+<h2 align="center">Unit Specific Closing Information<br>
+  Unit: <span class="big-head" id="UnitNumber">####</span> Purchaser: <span class="big-head" id="Purchaser">xxxxxxx</span>
+</h2>
+<form name="user_closing_form" method="post" action="user_closing_act.phtml">
+<input type="hidden" name="GSTRate" value="">
+<input type="hidden" name="UserID" value="">	
+<table width="100%" >
+  <tr>
+    <td>Sale Price</td>
+    <td>
+      <input type="text" name="OfferPrice" readonly>
+    </td>
+    <td>&nbsp;</td>
+    <td><input name="QualifyGSTRebate" type="checkbox">Qualifies for GST Rebate </td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>GST </td>
+    <td><input type="text" name="GST" readonly></td>
+    <td>&nbsp;</td>
+    <td>GST Rebate</td>
+    <td><input type="text" name="GSTRebate" readonly></td>
+  </tr>
+  <tr>
+    <td>Net GST Payable</td>
+    <td><input type="text" name="NetGSTPayable" readonly></td>
+    <td>&nbsp;</td>
+    <td>Net Sale Price</td>
+    <td><input type="text" name="ASPNetGST" readonly></td>
+  </tr>
+  <tr>
+    <td valign="top">Deduction Notes</td>
+    <td colspan="4"><textarea style="width:92%" name="Notes"></textarea></td>
+  </tr>
+</table>
+<hr>
+<table width="100%" >
+  <tr>
+    <td><strong>Clause SIX Fees: </strong></td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>Provincial sales tax on chattels </td>
+    <td><input type="text" name="SixFeeProvTax" readonly></td>
+    <td>&nbsp;</td>
+    <td>Water and Sewer Connection Charges</td>
+    <td><input type="text" name="SixFeeConnCharge" readonly></td>
+  </tr>
+  <tr>
+    <td>Water Meter </td>
+    <td><input type="text" name="SixFeeWaterMeter" readonly></td>
+    <td>&nbsp;</td>
+    <td>Hydro meter and installation Charges </td>
+    <td><input type="text" name="SixFeeHydroCharge" readonly></td>
+  </tr>
+  <tr>
+    <td>Development Charge</td>
+    <td><input type="text" name="SixFeeDevCharge" readonly></td>
+    <td>&nbsp;</td>
+    <td>Tarion</td>
+    <td><input type="text" name="SixFeeTarion" readonly></td>
+  </tr>
+</table>
+<hr>
+<table width="100%" >
+  <tr>
+    <td><strong>Admin Fees : </strong></td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td>Cheque Recovery Costs </td>
+    <td><input type="text" name="AdmFeeCheqRecovery"></td>
+    <td>&nbsp;</td>
+    <td>Estimated Total Common Expenses</td>
+    <td><input type="text" name="AdmFeeCommExpense"></td>
+  </tr>
+  <tr>
+    <td>Statutory Interest(From Lawyer) </td>
+    <td><input type="text" name="AdmFeeStatutory"></td>
+    <td>&nbsp;</td>
+    <td>Law Society Charges </td>
+    <td><input type="text" name="AdmFeeLawSociety"></td>
+  </tr>
+  <tr>
+    <td>NSF Fees </td>
+    <td><input type="text" name="AdmFeeMsf"></td>
+    <td>&nbsp;</td>
+    <td>Mortage Discharge Fee </td>
+    <td><input type="text" name="AdmFeeMortageCharge"></td>
+  </tr>
+  <tr>
+    <td>Credit One Year Maintenance Fees </td>
+    <td><input type="text" name="AdmFeeCreditMaint"></td>
+    <td>&nbsp;</td>
+    <td>Credit Purchase Price on Closing </td>
+    <td><input type="text" name="AdmFeeCreditPurchase"></td>
+  </tr>
+  <tr>
+    <td>Outstanding Options Charges </td>
+    <td><input type="text" name="AdmFeeOutstanding"></td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<hr>
+<table width="100%" >
+  <tr>
+    <td><strong>CAM</strong></td>
+    <td>Price</td>
+    <td>Number</td>
+    <td>Level</td>
+    <td>Fee</td>
+	</tr>
+  <tr>
+    <td>Reg Parking</td>
+    <td><input type="text" name="REG_PARKINGPrice"></td>
+    <td><input type="text" name="REG_PARKINGNumber"></td>
+    <td><input type="text" name="REG_PARKINGLevel"></td>
+    <td><input type="text" name="REG_PARKINGCAM"></td>
+    <input type="hidden" name="REG_PARKINGRID">
+  </tr>
+  <tr>
+    <td>Compact Parking</td>
+    <td><input type="text" name="COMPACT_PARKINGPrice"></td>
+    <td><input type="text" name="COMPACT_PARKINGNumber"></td>
+    <td><input type="text" name="COMPACT_PARKINGLevel"></td>
+    <td><input type="text" name="COMPACT_PARKINGCAM"></td>
+    <input type="hidden" name="COMPACT_PARKINGRID">
+  </tr>
+  <tr>
+    <td>Tandem Parking</td>
+    <td><input type="text" name="TANDEM_PARKINGPrice"></td>
+    <td><input type="text" name="TANDEM_PARKINGNumber"></td>
+    <td><input type="text" name="TANDEM_PARKINGLevel"></td>
+    <td><input type="text" name="TANDEM_PARKINGCAM"></td>
+    <input type="hidden" name="TANDEM_PARKINGRID">
+  </tr>
+  <tr>
+    <td>Reg Locker</td>
+    <td><input type="text" name="REG_LOCKERPrice"></td>
+    <td><input type="text" name="REG_LOCKERNumber"></td>
+    <td><input type="text" name="REG_LOCKERLevel"></td>
+    <td><input type="text" name="REG_LOCKERCAM"></td>
+    <input type="hidden" name="REG_LOCKERRID">
+  </tr>
+  <tr>
+    <td>Bike Rack</td>
+    <td><input type="text" name="BIKE_RACKERPrice"></td>
+    <td><input type="text" name="BIKE_RACKERNumber"></td>
+    <td><input type="text" name="BIKE_RACKERLevel"></td>
+    <td><input type="text" name="BIKE_RACKERCAM"></td>
+    <input type="hidden" name="BIKE_RACKERRID">
+  </tr>
+</table>
+<p>
+  <input type="submit" id="btnUpdate" value="Update" onClick="return false;"> &nbsp;&nbsp;
+  <input type="button" id="btnClose" value="Close" onClick="window.close();"> &nbsp;&nbsp;
+</p>
+</form>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<?php
+// Action for user_closing
+include_once "main_include.phtml";
+include 'AjaxUtil_class.phtml';
+
+function ZeroIfBlank($data) {
+  if($data=="") 
+    return '0';
+  else
+    return $data;
+}
+
+// retrieve project closing information
+if ($_REQUEST["act"] == "select") {
+  $sql = "select c.*, u.OfferPrice, u.GSTRebate, u.ASPNetGST, u.FirstName, u.LastName, u.AgreementDepositDate"
+       . "  from UserClosing c, User u " 
+       . " where c.UnitNumber = u.UnitNumber "
+       . "   and u.DealStatus = 'Firm' "
+       . "   and c.UnitNumber = '" . $_REQUEST["UnitNumber"] . "'";
+
+  $rows = AjaxUtil::doSql($sql);
+	$count = count($uClosings);
+  if(count($rows) <> 1) {
+    AjaxUtil::raiseError("Invalid unit number: " . $_REQUEST["UnitNumber"]);
+  } else {
+	
+		// if purchased after June 30, 2006, use 6%
+		$rows[0]["GSTRate"] = strtotime($rows[0]["AgreementDepositDate"]) > strtotime("2006-06-30") ? 0.06:0.07; //$GSTEffectiveTimestamp CURRENT_GST_RATE : PREV_GST_RATE ;
+		
+    echo AjaxUtil::phpObj2JsObj($rows[0]);
+  }
+}
+
+// update project closing information
+elseif ($_REQUEST["act"] == "update") {
+  $sql="update UserClosing set " .
+//      " SixFeeProvTax=" .         ZeroIfBlank($_REQUEST["SixFeeProvTax"]) .
+//      ",SixFeeConnCharge=" .      ZeroIfBlank($_REQUEST["SixFeeConnCharge"]) .
+//      ",SixFeeWaterMeter=" .      ZeroIfBlank($_REQUEST["SixFeeWaterMeter"]) .
+//      ",SixFeeHydroCharge=" .     ZeroIfBlank($_REQUEST["SixFeeHydroCharge"]) .
+//      ",SixFeeDevCharge=" .       ZeroIfBlank($_REQUEST["SixFeeDevCharge"]) .
+//      ",SixFeeTarion=" .          ZeroIfBlank($_REQUEST["SixFeeTarion"]) .
+      " AdmFeeCheqRecovery=" .    ZeroIfBlank($_REQUEST["AdmFeeCheqRecovery"]) .
+      ",AdmFeeCommExpense=" .     ZeroIfBlank($_REQUEST["AdmFeeCommExpense"]) .
+      ",AdmFeeStatutory=" .       ZeroIfBlank($_REQUEST["AdmFeeStatutory"]) .
+      ",AdmFeeLawSociety=" .      ZeroIfBlank($_REQUEST["AdmFeeLawSociety"]) .
+      ",AdmFeeMsf=" .             ZeroIfBlank($_REQUEST["AdmFeeMsf"]) .
+      ",AdmFeeMortageCharge=" .   ZeroIfBlank($_REQUEST["AdmFeeMortageCharge"]) .
+      ",AdmFeeCreditMaint=" .     ZeroIfBlank($_REQUEST["AdmFeeCreditMaint"]) .
+      ",AdmFeeCreditPurchase=" .  ZeroIfBlank($_REQUEST["AdmFeeCreditPurchase"]) .
+      ",AdmFeeOutstanding=" .     ZeroIfBlank($_REQUEST["AdmFeeOutstanding"]) .
+      " where UnitNumber='". $_REQUEST["UnitNumber"] . "'";
+//  print_r($_REQUEST);
+//  echo($sql);
+  AjaxUtil::doSql($sql);
+  echo "User Closing Information has been updated Successfully";
+
+} else {
+  //print_r($_REQUEST);
+  AjaxUtil::raiseError("unknown request");
+}
+?>
