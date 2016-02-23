@@ -42,12 +42,7 @@ $OccupancyDate = $row['OccupancyDate_nodayformat'];
           </td>
         
           <td align="center" colspan="4">
-<?
 
-if (is_citygate_1($PHP_SELF))
-	echo "CITYGATE 1";
-elseif (is_citygate_2($PHP_SELF)) echo "CITYGATE 2";
-?>
           </td>
 
           <td align="right" rowspan="6">
@@ -253,12 +248,6 @@ while ($row_Section = mysql_fetch_array($result_Section)) {
           <td>
             CONDOMINIUM:
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<?
-
-if (is_citygate_1($PHP_SELF))
-	echo "CITYGATE 1";
-elseif (is_citygate_2($PHP_SELF)) echo "CITYGATE 2";
-?>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
