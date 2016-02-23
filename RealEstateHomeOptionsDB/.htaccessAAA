@@ -1,9 +1,0 @@
-DirectoryIndex index.html index.phtml login.phtml
-AddType application/x-httpd-php .phtml .php
-
-php_value upload_max_filesize 50M
-php_value memory_limit 50M
-php_value post_max_size 50M
-php_value register_globals 1
-#require for commiting upgrade options
-php_value max_execution_time 300
