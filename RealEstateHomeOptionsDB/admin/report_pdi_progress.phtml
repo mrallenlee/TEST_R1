@@ -72,7 +72,7 @@ if ($format == "csv")
 	header("Content-Disposition: attachment; filename=file.csv");
 	header("Pragma: no-cache");
 	header("Expires: 0");
-
+  // ALLEN TODO Add QA into CSV format
 	print "Unit,Purchaser,PDI Done,PDI O/S,PDI Signed Off,30 Day List Done,30 Day List O/S,30 Day List Signed Off,11 Month List Done,11 Month List O/S,11 Month List Signed Off\n";
 	while ($row = mysql_fetch_array($result))
 	{
@@ -134,6 +134,39 @@ print_top_frame($PHP_SELF, SUB_FOLDER_INVERT_RELATIVE_PATH."/".HOME_OPTIONS_INVE
                 </tr>
 <?
 	}
+?>
+              </table>
+            </td>
+
+
+            <!--QA data table-->
+          <td>
+              <table cellspacing="0" cellpadding="5" border="0">
+                <tr>
+                  <!-- 2nd data table header -->
+                  <td class="head" colspan="3"><b>QA</b></td>
+                </tr>
+
+                <tr>
+                  <!-- QA data table header -->
+                  <!-- For now, no signoff process for QA -->
+                  <td class="head"><b><nobr>Done</nobr></b></td>
+                  <td class="head"><b><nobr>O/S</nobr></b></td>
+                  <td class="head"><b><nobr></nobr></b></td>
+                </tr>
+
+<?
+  mysql_data_seek($result, 0);
+  while ($row = mysql_fetch_array($result))
+  {
+?>
+                <tr align="center">
+                  <td class="table_rec"><?= get_done_count($db, $row['UnitNumber'], "QA") ?></td>
+                  <td class="table_rec"><?= get_outstanding_count($db, $row['UnitNumber'], "QA") ?></td>
+                  <td class="table_rec"></td>
+                </tr>
+<?
+  }
 ?>
               </table>
             </td>
