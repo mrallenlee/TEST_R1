@@ -69,7 +69,7 @@ if ($table_name == "Unit")
 		echo "<tr><td><span class='user_message'>" . $user_message . "</span></td></tr>\n";
 	}
 
-	$sql	= "SELECT $table_name.UnitNumber UnitNumber, concat(LastName, ', ', FirstName) PurchaserName, 
+	$sql	= "SELECT $table_name.UnitNumber UnitNumber, concat(LastName, ', ', FirstName) PurchaserName, User.UserID,
 			date_format(PDIDate, '%e %b') As PDIDate, PDITime, PDINotified, PDINotifiedDate, ONHWPRegNumber,
 			date_format(OccupancyDate, '%e %b') As OccupancyDate, OccupancyTime, OccupancyNotified, 
 			OccupancyNotifiedDate, QADone, PDIDone, PDISignOff
@@ -131,7 +131,7 @@ if ($table_name == "Unit")
 ?>
                 <tr>
                   <td class="table_rec"><a href="display_pdi.phtml?table_name=PDIDefect&unit=<?= $row['UnitNumber'] ?>"><?= $row['UnitNumber'] ?>&nbsp;</a></td>
-                  <td class="table_rec"><nobr><?= $row['PurchaserName'] ?>&nbsp;</nobr></td>
+                  <td class="table_rec"><nobr><a href="../../RealEstateDB/userListing.phtml?action=display&mode=purchaser&UserID=<?= $row['UserID']; ?>"><?= $row['PurchaserName'] ?>&nbsp;</nobr></a></td>
   	         <td class="table_rec"><nobr><?= $row['PDIDate'] ?>&nbsp;</nobr></td>
                   <td class="table_rec"><nobr><?= $row['PDITime'] ?>&nbsp;</nobr></td>
                   <td class="table_rec" align="center"><INPUT TYPE="checkbox" name="<?= $row['UnitNumber']?>_PDINotified" DISABLED
