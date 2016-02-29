@@ -9,14 +9,23 @@ print_top_frame($PHP_SELF, SUB_FOLDER_INVERT_RELATIVE_PATH."/".HOME_OPTIONS_INVE
 
 // Handle update request on PDIDefect -> TradeContacted
 if ($update) {
-        $sql = "UPDATE PDIDefect SET TradeContacted=0";
-        $result = mysql_query($sql,$db) or die("Error : $sql<br>" . mysql_error());
+        // ALLEN Only update the one being unchecked
+        //$sql = "UPDATE PDIDefect SET TradeContacted=0";
+        //$result = mysql_query($sql,$db) or die("Error : $sql<br>" . mysql_error());
 
-        foreach ($_POST as $key=>$ignore) {
+        // Add a hidden value in before CheckBox to let HTML code to send false value even
+        // checkbox is not checked
+        foreach ($_POST as $key=>$value) {
+                $updateValue = 0;
+
                 $data = explode("_", $key);
                 if ($data[0] == 'TradeContacted') {
+                    //print ("key=" . $key . " value=" . $value);
+                        if ($value == "on") {
+                            $updateValue = 1;
+                        } 
                         $PDIDefect_id = $data[1];
-                        $sql = "UPDATE PDIDefect SET TradeContacted=1 WHERE PDIDefectID=".$PDIDefect_id;
+                        $sql = "UPDATE PDIDefect SET TradeContacted=" . $updateValue . " WHERE PDIDefectID=".$PDIDefect_id;
                         $result = mysql_query($sql,$db) or die("Error : $sql<br>" . mysql_error());
                 }
         }
@@ -238,6 +247,7 @@ if (!isset($search_Floor)) {
                                 echo "  <td>" . $row["ContractorName"] . "</td>\n";
                                 echo "  <td>" . $row["ReportDate"] . "</td>\n";
                                 echo "  <td>" . $row["FixedDate"] . "</td>\n";
+                                echo " <input type='hidden' name='TradeContacted_" . $row["PDIDefectID"] . "' value='false'>";
 
                                 echo "  <td align='center'><input type='checkbox' name='TradeContacted_" . $row["PDIDefectID"] . "'";
                                 if ($row['TradeContacted']) { echo " checked='checked'"; }
